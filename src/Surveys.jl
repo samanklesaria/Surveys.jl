@@ -98,10 +98,9 @@ end
 
 
 # TODO:
+# Docs
 # Make sure the stuff so far works
-# Special case for equal probability Taylor series
 # What about Taylor for p-estimation?
-# Regression coefficients.
 # GLM coefficients
 # subpopulation stuff
 # PPS

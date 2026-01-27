@@ -1,0 +1,93 @@
+"IndexYear","county","Location","Population","Total","Rate","VTotal","VRate","Murder","Rape","Robbery","Assault","PTotal","PRate","Arson","Burglary","Theft","MVTheft","king","fpc"
+"2004","DOUGLAS","Douglas County Sheriffs Office",25770,724,28.1,38,1.5,1,6,2,29,686,26.6,1,177,478,30,FALSE,40
+"2004","DOUGLAS","East Wenatchee Police Department",8255,596,72.2,16,1.9,0,6,2,8,580,70.3,0,60,491,29,FALSE,40
+"2004","FRANKLIN","Connell Police Department",3195,93,29.1,0,0,0,0,0,0,93,29.1,0,13,76,4,FALSE,40
+"2004","FRANKLIN","Franklin County Sheriffs Office",12965,305,23.5,19,1.5,0,3,2,14,286,22.1,2,87,183,14,FALSE,40
+"2004","FRANKLIN","Pasco Police Department",40840,1853,45.4,142,3.5,3,12,36,91,1711,41.9,5,334,1229,143,FALSE,40
+"2004","JEFFERSON","Jefferson County Sheriffs Office",18465,570,30.9,35,1.9,0,10,0,25,535,29,5,212,291,27,FALSE,40
+"2004","JEFFERSON","Port Townsend Police Department",8535,447,52.4,10,1.2,0,3,2,5,437,51.2,1,58,364,14,FALSE,40
+"2004","KING","Algona Police Department",2605,40,15.4,2,0.8,0,1,0,1,38,14.6,0,6,23,9,TRUE,40
+"2004","KING","Auburn Police Department",46135,4282,92.8,243,5.3,1,16,90,136,4039,87.5,41,859,2337,802,TRUE,40
+"2004","KING","Bellevue Police Department",116500,5062,43.5,174,1.5,0,38,75,61,4888,42,32,680,3570,606,TRUE,40
+"2004","KING","Black Diamond Police Department",4000,77,19.3,2,0.5,0,1,0,1,75,18.8,0,17,49,9,TRUE,40
+"2004","KING","Bothell Police Department",30930,984,31.8,31,1,0,5,5,21,953,30.8,6,153,644,150,TRUE,40
+"2004","KING","Burien Police Department",31130,2192,70.4,171,5.5,2,20,62,87,2021,64.9,17,370,1233,401,TRUE,40
+"2004","KING","Carnation Police Department",1895,68,35.9,4,2.1,0,1,1,2,64,33.8,1,17,43,3,TRUE,40
+"2004","KING","Clyde Hill Police Department",2790,49,17.6,0,0,0,0,0,0,49,17.6,1,12,35,1,TRUE,40
+"2004","KING","Covington Police Department",15190,648,42.7,39,2.6,0,9,11,19,609,40.1,11,123,350,125,TRUE,40
+"2004","KING","Des Moines Police Department",29020,1401,48.3,115,4,2,17,41,55,1286,44.3,6,244,648,388,TRUE,40
+"2004","KING","Duvall Police Department",5545,29,5.2,4,0.7,0,1,0,3,25,4.5,0,6,13,6,TRUE,40
+"2004","KING","Enumclaw Police Department",11160,483,43.3,19,1.7,0,4,1,14,464,41.6,1,57,301,105,TRUE,40
+"2004","KING","Federal Way Police Department",83590,5439,65.1,280,3.3,0,50,121,109,5159,61.7,25,759,3257,1118,TRUE,40
+"2004","KING","Issaquah Police Department",15510,936,60.3,22,1.4,0,5,9,8,914,58.9,0,117,651,146,TRUE,40
+"2004","KING","Kenmore Police Department",19170,579,30.2,32,1.7,2,7,7,16,547,28.5,4,134,334,75,TRUE,40
+"2004","KING","Kent Police Department",84560,5190,61.4,302,3.6,4,53,117,128,4888,57.8,41,1196,2322,1329,TRUE,40
+"2004","KING","King County Sheriffs Office",357305,11157,31.2,699,2,13,136,210,340,10458,29.3,217,2751,5590,1900,TRUE,40
+"2004","KING","Kirkland Police Department",45800,1775,38.8,76,1.7,1,19,26,30,1699,37.1,17,299,1129,254,TRUE,40
+"2004","KING","Lake Forest Park Police Department",12770,351,27.5,16,1.3,0,0,4,12,335,26.2,1,64,228,42,TRUE,40
+"2004","KING","Maple Valley Police Department",16280,482,29.6,25,1.5,1,8,4,12,457,28.1,2,108,261,86,TRUE,40
+"2004","KING","Medina Police Department",3405,99,29.1,0,0,0,0,0,0,99,29.1,0,16,75,8,TRUE,40
+"2004","KING","Mercer Island Police Department",21830,633,29,15,0.7,0,2,4,9,618,28.3,6,102,447,63,TRUE,40
+"2004","KING","Newcastle Police Department",8375,296,35.3,15,1.8,0,2,7,6,281,33.6,1,33,168,79,TRUE,40
+"2004","KING","Normandy Park Police Department",6400,179,28,4,0.6,0,0,3,1,175,27.3,1,43,107,24,TRUE,40
+"2004","KING","North Bend Police Department",4660,227,48.7,12,2.6,1,5,0,6,215,46.1,2,40,139,34,TRUE,40
+"2004","KING","Pacific Police Department",5680,279,49.1,15,2.6,0,2,2,11,264,46.5,2,62,142,58,TRUE,40
+"2004","KING","Port of Seattle Police Department",0,687,NA,17,NA,0,4,6,7,670,NA,3,22,554,91,TRUE,40
+"2004","KING","Redmond Police Department",46900,1888,40.3,79,1.7,1,19,24,35,1809,38.6,8,201,1424,176,TRUE,40
+"2004","KING","Renton Police Department",55360,5058,91.4,245,4.4,2,24,95,124,4813,86.9,6,632,3190,985,TRUE,40
+"2004","KING","Sammamish Police Department",36560,438,12,13,0.4,0,2,3,8,425,11.6,13,72,312,28,TRUE,40
+"2004","KING","SeaTac Police Department",25130,1865,74.2,128,5.1,1,19,40,68,1737,69.1,6,274,998,459,TRUE,40
+"2004","KING","Seattle Police Department",572600,46838,81.8,3798,6.6,24,145,1588,2041,43040,75.2,243,7734,25810,9253,TRUE,40
+"2004","KING","Shoreline Police Department",52740,2424,46,151,2.9,1,33,54,63,2273,43.1,34,447,1417,375,TRUE,40
+"2004","KING","Snoqualmie Police Department",5110,136,26.6,6,1.2,0,4,0,2,130,25.4,1,24,87,18,TRUE,40
+"2004","KING","Tukwila Police Department",17240,3469,201.2,175,10.2,1,19,80,75,3294,191.1,14,303,2340,637,TRUE,40
+"2004","KING","University of Washington Police Department",0,713,NA,13,NA,0,1,8,4,700,NA,3,73,589,35,TRUE,40
+"2004","KING","Woodinville Police Department",9915,605,61,15,1.5,0,1,10,4,590,59.5,8,100,423,59,TRUE,40
+"2004","KING","Yarrow Point Police Department",990,20,20.2,0,0,0,0,0,0,20,20.2,0,6,12,2,TRUE,40
+"2004","LEWIS","Centralia Police Department",15200,1582,104.1,95,6.3,0,21,17,57,1487,97.8,3,220,1155,109,FALSE,40
+"2004","LEWIS","Chehalis Police Department",6980,690,98.9,27,3.9,0,4,6,17,663,95,1,73,551,38,FALSE,40
+"2004","LEWIS","Lewis County Sheriffs Office",42415,981,23.1,80,1.9,0,11,8,61,901,21.2,6,354,471,70,FALSE,40
+"2004","LEWIS","Morton Police Department",1015,79,77.8,5,4.9,0,0,0,5,74,72.9,2,9,59,4,FALSE,40
+"2004","LEWIS","Mossyrock Police Department",480,13,27.1,3,6.3,0,1,0,2,10,20.8,0,2,7,1,FALSE,40
+"2004","LEWIS","Napavine Police Department",1330,55,41.4,0,0,0,0,0,0,55,41.4,0,8,47,0,FALSE,40
+"2004","LEWIS","Pe Ell Police Department",660,5,7.6,1,1.5,0,0,0,1,4,6.1,0,3,0,1,FALSE,40
+"2004","LEWIS","Vader Police Department",595,11,18.5,2,3.4,0,0,1,1,9,15.1,0,4,5,0,FALSE,40
+"2004","LEWIS","Winlock Police Department",1340,58,43.3,5,3.7,1,1,0,3,53,39.6,0,13,38,2,FALSE,40
+"2004","LINCOLN","Lincoln County Sheriffs Office",7745,203,26.2,5,0.6,0,1,0,4,198,25.6,1,58,126,13,FALSE,40
+"2004","LINCOLN","Odessa Police Department",950,24,25.3,3,3.2,0,2,0,1,21,22.1,0,1,20,0,FALSE,40
+"2004","LINCOLN","Reardan Police Department",610,10,16.4,1,1.6,0,0,0,1,9,14.8,1,5,3,0,FALSE,40
+"2004","LINCOLN","Wilbur Police Department",895,20,22.3,0,0,0,0,0,0,20,22.3,0,15,4,1,FALSE,40
+"2004","PACIFIC","Ilwaco Police Department",955,35,36.6,2,2.1,0,0,0,2,33,34.6,0,5,26,2,FALSE,40
+"2004","PACIFIC","Long Beach Police Department",1360,139,102.2,3,2.2,0,0,0,3,136,100,0,43,86,7,FALSE,40
+"2004","PACIFIC","Pacific County Sheriffs Office",13955,674,48.3,35,2.5,0,4,3,28,639,45.8,6,294,305,34,FALSE,40
+"2004","PACIFIC","Raymond Police Department",2970,49,16.5,3,1,0,0,0,3,46,15.5,0,7,38,1,FALSE,40
+"2004","PACIFIC","South Bend Police Department",1760,76,43.2,2,1.1,0,0,1,1,74,42,0,16,58,0,FALSE,40
+"2004","SPOKANE","Airway Heights Police Department",4590,110,24,6,1.3,0,0,2,4,104,22.7,0,23,72,9,FALSE,40
+"2004","SPOKANE","Cheney Police Department",9855,172,17.5,16,1.6,0,6,3,7,156,15.8,0,21,120,15,FALSE,40
+"2004","SPOKANE","Eastern Washington University Police Department",0,81,NA,3,NA,0,1,0,2,78,NA,0,11,65,2,FALSE,40
+"2004","SPOKANE","Liberty Lake Police Department",4950,102,20.6,7,1.4,0,0,0,7,95,19.2,1,22,60,12,FALSE,40
+"2004","SPOKANE","Medical Lake Police Department",4120,90,21.8,3,0.7,0,0,0,3,87,21.1,1,16,67,3,FALSE,40
+"2004","SPOKANE","Spokane County Sheriffs Office",127004,3647,28.7,156,1.2,2,17,17,120,3491,27.5,15,934,2260,282,FALSE,40
+"2004","SPOKANE","Spokane Police Department",197400,19226,97.4,1208,6.1,9,90,310,799,18018,91.3,57,3368,12763,1830,FALSE,40
+"2004","SPOKANE","Spokane Valley Police Department",83950,5357,63.8,263,3.1,5,33,48,177,5094,60.7,26,928,3613,527,FALSE,40
+"2004","WHITMAN","Colfax Police Department",2845,109,38.3,12,4.2,0,1,0,11,97,34.1,4,20,67,6,FALSE,40
+"2004","WHITMAN","Colton Police Department",395,0,0,0,0,0,0,0,0,0,0,0,0,0,0,FALSE,40
+"2004","WHITMAN","Garfield Police Department",640,12,18.8,0,0,0,0,0,0,12,18.8,0,4,7,1,FALSE,40
+"2004","WHITMAN","Oakesdale Police Department",420,20,47.6,0,0,0,0,0,0,20,47.6,1,7,9,3,FALSE,40
+"2004","WHITMAN","Palouse Police Department",1015,25,24.6,0,0,0,0,0,0,25,24.6,0,8,17,0,FALSE,40
+"2004","WHITMAN","Pullman Police Department",27065,584,21.6,25,0.9,0,9,5,11,559,20.7,14,98,415,32,FALSE,40
+"2004","WHITMAN","Rosalia Police Department",650,2,3.1,0,0,0,0,0,0,2,3.1,0,2,0,0,FALSE,40
+"2004","WHITMAN","Washington State University Police Department",0,177,NA,4,NA,0,3,0,1,173,NA,5,32,126,10,FALSE,40
+"2004","WHITMAN","Whitman County Sheriffs Office",8670,121,14,8,0.9,0,3,1,4,113,13,0,41,65,7,FALSE,40
+"2004","YAKIMA","Grandview Police Department",8540,620,72.6,15,1.8,0,6,2,7,605,70.8,0,116,440,49,FALSE,40
+"2004","YAKIMA","Granger Police Department",2760,192,69.6,11,4,0,2,1,8,181,65.6,0,56,118,7,FALSE,40
+"2004","YAKIMA","Moxee City Police Department",895,7,7.8,0,0,0,0,0,0,7,7.8,0,3,3,1,FALSE,40
+"2004","YAKIMA","Selah Police Department",6625,221,33.4,4,0.6,0,0,3,1,217,32.8,0,33,165,19,FALSE,40
+"2004","YAKIMA","Sunnyside Police Department",14520,1238,85.3,34,2.3,0,2,10,22,1204,82.9,10,216,890,88,FALSE,40
+"2004","YAKIMA","Tieton Police Department",1185,26,21.9,0,0,0,0,0,0,26,21.9,1,8,16,1,FALSE,40
+"2004","YAKIMA","Toppenish Police Department",9000,962,106.9,74,8.2,1,12,14,47,888,98.7,2,175,603,108,FALSE,40
+"2004","YAKIMA","Union Gap Police Department",5675,885,155.9,18,3.2,0,4,9,5,867,152.8,1,133,680,53,FALSE,40
+"2004","YAKIMA","Wapato Police Department",4525,428,94.6,18,4,0,2,8,8,410,90.6,2,98,244,66,FALSE,40
+"2004","YAKIMA","Yakima County Sheriffs Office",89705,2966,33.1,119,1.3,5,38,24,52,2847,31.7,43,1001,1426,377,FALSE,40
+"2004","YAKIMA","Yakima Police Department",79480,6945,87.4,380,4.8,4,55,110,211,6565,82.6,92,1251,4524,698,FALSE,40
+"2004","YAKIMA","Zillah Police Department",2525,151,59.8,6,2.4,0,1,0,5,145,57.4,1,19,109,16,FALSE,40

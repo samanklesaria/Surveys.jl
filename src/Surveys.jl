@@ -1,48 +1,129 @@
 module Surveys
-using Statistics, StatsBase, DataFrames
+using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests,
+    ForwardDiff, DiffResults, StatsModels
 
-# General Utilities
-# TODO: perhaps these are unnecessary. Easier just to use DataFramesMeta manually.
+export SampleSum, π_sum, pwr_sum
 
-function stratified(f, df::DataFrame, cols, Ns::Dict, strata::Symbol)
-    sum(combine(groupby(df, strata), ([strata; cols] => ((s, c...)->f(c..., Ns[s])) => :val)[!, :val]))
+struct SampleSum
+    sum::Float64
+    var::Float64
 end
 
-unstratified(f, df::DataFrame, cols, N) = f(df[!, cols]..., N)
+Base.:+(a::SampleSum, b::SampleSum) = SampleSum(a.sum + b.sum, a.var + b.var)
 
-# SI Designs
-
-Base.sum(xs::Vector, N::Int) = N * mean(xs)
-
-function sum_var(xs::Vector, N::Int)
-    N^2 * (1 / length(x) - 1 / N) * var(xs; corrected=true)
+function StatsAPI.confint(a::SampleSum, args...; kwargs...)
+    confint(OneSampleZTest(a.sum, sqrt(a.var)), args...; kwargs...)
 end
 
-# SIR Designs
+# π Estimattion
 
-Base.sum(xs::Vector, probs::Vector, N::Int) = sum(xs ./ probs) # also works for non-replacement
-# Note: same as in StatsBase.
+π_sum(xs::AbstractVector{<:Real}, N::Int) = SampleSum(
+    N * mean(xs),
+    N^2 * (1 / length(xs) - 1 / N) * var(xs; corrected=true))
 
-function sum_var(xs::Vector, probs::Vector, N::Int)
-    N^2 * var(xs, ProbabilityWeights(1./ probs); corrected=true) / length(xs)
+function π_sum(xs::AbstractVector{SampleSum}, N::Int)
+    m, v = mean_and_var((x.sum for x in xs); corrected=true)
+    SampleSum(N * m, N^2 * (1 / length(xs) - 1 / N) * v + N * mean(x.var for x in xs))
 end
 
-# General sampling without replacement
-
-sum_var(strata_info::Tuple{Int, Matrix}) = (x, probs)-> begin
-    (joint_probs, N) = strata_info
-    Δ = (1 .- (probs .* probs')) ./ joint_probs
-    Δ[diagind(Δ)] .= 1 .- probs
-    y = x ./ probs
-    y' * (Δ * y)
+function π_sum(xs::AbstractVector{<:Real}, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
+    Δ = 1 .- (probs .* probs') ./ joint_probs
+    y = xs ./ probs
+    SampleSum(sum(y), y' * (Δ * y))
 end
+
+function π_sum(xs::AbstractVector{SampleSum}, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
+    Δ = 1 .- (probs .* probs') ./ joint_probs
+    y = [x.sum for x in xs] ./ probs
+    SampleSum(sum(y), y' * (Δ * y), sum([x.var for x in xs] ./ probs))
+end
+
+function apply_π_sum(f::Function, xs::Matrix{<:Real}, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
+    x0 = vec(sum(xs ./ reshape(probs, (:, 1)); dims=1))
+    result = GradientResult(x0)
+    gradient!(result, f, x0)
+    ∇f = DiffResults.gradient(result)
+    u = (xs * ∇f') ./ probs
+    Δ = 1 .- (probs .* probs') ./ joint_probs
+    SampleSum(DiffResults.value(result), u' * (Δ * u))
+end
+
+function apply_π_sum(f::Function, xs::Matrix{<:Real}, N::Int)
+    x0 = N * vec(mean(xs; dims=1))
+    result = GradientResult(x0)
+    gradient!(result, f, x0)
+    ∇f = DiffResults.gradient(result)
+    u = xs * ∇f'
+    SampleSum(N * mean(u), N^2 * (1 / length(x) - 1 / N) * var(u; corrected=true))
+end
+
+function π_lm(f::FormulaTerm, df, N::Int)
+    y, X = modelcols(f, df)
+    XX = X' * X
+    β = XX \ (X'y)
+    V = Diagonal((y - X * β) .^ 2)
+    n = length(y)
+    SampleSum(β, (1 - n / N) * (n / (n - 1)) * (XX \ (XX \ X_A_Xt(V, X))'))
+end
+
+function π_lm(f::FormulaTerm, df, probs::AbstractVector{<:Real}, N::Int)
+    y, X = modelcols(f, df)
+    Λ = Diagonal(1 ./ probs)
+    XX = Xt_A_X(Λ, X)
+    β = XX \ (X' * Λ * y)
+    R = Diagonal(y - X * β)
+    Δ = 1 .- (probs .* probs') ./ joint_probs
+    V = X_A_Xt(Δ, X' * Λ * R)
+    SampleSum(β, XX \ (XX \ V)')
+end
+
+# TODO: derive fixed size design for this.
+# Also: what about Taylor linearization with clustering? Or stratification?
+
+function pps_weight(xs::Vector{<:Real})
+    # TODO
+end
+
+# P Estimation
+
+function pwr_sum(xs::AbstractVector{<:Real}, probs::Vector{<:Real}, N::Int)
+    y = xs ./ probs
+    SampleSum(mean(y), var(y; corrected=true) / length(xs))
+end
+
+function pwr_sum(xs::AbstractVector{SampleSum}, probs::AbstractVector{<:Real}, N::Int)
+    y = [x.sum for x in xs] ./ probs
+    SampleSum(mean(y), var(y; corrected=true) / N)
+end
+
+
+# TODO:
+# Make sure the stuff so far works
+# Special case for equal probability Taylor series
+# What about Taylor for p-estimation?
+# Regression coefficients.
+# GLM coefficients
+# subpopulation stuff
+# PPS
+# self weighted
+
+# PPS example:
+# @chain df begin
+# 	@combine(:total_income=si_sum(:income, pps_weight(:height)..., N))
+# end
+
+# Stratified example:
+# @chain df begin
+# 	@groupby(:strata)
+# 	@combine(:t = si_sum(:income, N[:strata[1]]))
+# 	@combine(sum(:t))
+# end
 
 # Two Stage Cluster Sampling
-
 # @chain df begin
 #   @groupby(cluster)
-# 	@combine(:total= sum(:xs, N2s[:cluster[1]]))
-# 	@select(result=sum(:total, N1))
+# 	@combine(:total= si_sum(:xs, N2s[:cluster[1]]))
+# 	@select(result=si_sum(:total, N1))
 # end
 
 # One Stage Cluster Sampling
@@ -51,27 +132,6 @@ end
 # 	@combine(:total= sum(:xs))
 # 	@select(result=sum(:total, N1))
 # end
-
-# This same pattern (above) can be used to get overall variance, just using `sum_var` instead of sum.
-
-# What about CIs? Maybe have a type that captures both variance and point estimate? Could use Normal from Distributions.
-# What about sampling clusters?
-# When we're sampling whole groups, at least for the total, just sum the clusters first, and use the existing functions above.
-
-
-
-
-# When two stage sampling with replacement, we can just multiply the probabilities.
-# to get a pwr estimate.
-# NOT quite- that doesn't account for a lack of independence.
-
-# TODO: other functions.
-
-# Sampling Designs to Support:
-# Cluster sampling (clusters of one form, within of another)
-# Given replicate weights.
-# Linearization
-
 
 
 end # module Surveys

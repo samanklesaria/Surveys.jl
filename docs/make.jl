@@ -8,4 +8,7 @@ makedocs(
     modules=[Surveys]
 )
 
-# deploydocs(repo="github.com/samanklesaria/Surveys.jl.git")
+deploydocs(
+    repo="github.com/samanklesaria/Surveys.jl.git",
+    devbranch="main"
+)

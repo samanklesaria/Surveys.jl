@@ -24,4 +24,4 @@ StatsBase = "0.34.10"
 StatsModels = "0.7.8"
 
 [workspace]
-projects = ["test"]
+projects = ["test", "docs"]

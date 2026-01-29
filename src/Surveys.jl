@@ -1,8 +1,10 @@
 module Surveys
-using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests,
-    ForwardDiff, DiffResults, StatsModels
+using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests, StatsModels
+using DiffResults, ForwardDiff
+import ForwardDiff: gradient!
+import DiffResults: GradientResult
 
-export SampleSum, π_sum, pwr_sum
+export SampleSum, π_sum, pwr_sum, apply_π_sum
 
 struct SampleSum
     sum::Float64
@@ -43,7 +45,7 @@ function apply_π_sum(f::Function, xs::Matrix{<:Real}, probs::AbstractVector{<:R
     result = GradientResult(x0)
     gradient!(result, f, x0)
     ∇f = DiffResults.gradient(result)
-    u = (xs * ∇f') ./ probs
+    u = (xs * ∇f) ./ probs
     Δ = 1 .- (probs .* probs') ./ joint_probs
     SampleSum(DiffResults.value(result), u' * (Δ * u))
 end
@@ -53,8 +55,8 @@ function apply_π_sum(f::Function, xs::Matrix{<:Real}, N::Int)
     result = GradientResult(x0)
     gradient!(result, f, x0)
     ∇f = DiffResults.gradient(result)
-    u = xs * ∇f'
-    SampleSum(N * mean(u), N^2 * (1 / length(x) - 1 / N) * var(u; corrected=true))
+    u = xs * ∇f
+    SampleSum(DiffResults.value(result), N^2 * (1 / size(xs, 1) - 1 / N) * var(u; corrected=true))
 end
 
 function π_lm(f::FormulaTerm, df, N::Int)
@@ -95,6 +97,8 @@ function pwr_sum(xs::AbstractVector{SampleSum}, probs::AbstractVector{<:Real}, N
     y = [x.sum for x in xs] ./ probs
     SampleSum(mean(y), var(y; corrected=true) / N)
 end
+
+# What about the variance of predictions from a linear model?
 
 
 # TODO:

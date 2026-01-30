@@ -12,8 +12,8 @@ A Julia package for design-based inference in survey sampling. This package prov
 - Two-stage cluster sampling
 - Taylor series variance estimation
 
-The main exported type is `SampleSum`, which stores both an estimate and its variance. The package provides the `π_sum` function for computing totals under various sampling designs.
-
+The main exported type is `SampleSum`, which stores both an estimate and its variance. 
+    
 ## Simple Random Sampling
 
 For simple random sampling without replacement, use `π_sum` with the finite population correction (FPC).
@@ -69,8 +69,8 @@ end
 
 **R equivalent:**
 ```r
-svydesign(id=~county, fpc=~fpc, data=cal_crime)
-svytotal(~Burglary, cluster1_design)
+stage1_design <- svydesign(id=~county, fpc=~fpc, data=cal_crime)
+svytotal(~Burglary, stage1_design)
 ```
 
 The key is to first compute totals within each sampled cluster, then treat those cluster totals as the observations for `π_sum`.
@@ -81,7 +81,7 @@ For two-stage sampling, apply `π_sum` twice: once within primary sampling units
 
 **Julia:**
 ```julia
-@chain stage2 begin
+@chain df begin
     @groupby(:county)
     @combine(:subtotal = π_sum(:Burglary, county_sizes[first(:county)]))
     @combine(:total = π_sum(:subtotal, N_counties))
@@ -90,7 +90,7 @@ end
 
 **R equivalent:**
 ```r
-stage2_design <- svydesign(id=~county+id, fpc=~fpc+fpc2, data=stage2)
+stage2_design <- svydesign(id=~county+id, fpc=~fpc+fpc2, data=df)
 svytotal(~Burglary, stage2_design)
 ```
 
@@ -109,10 +109,31 @@ ratio_result = @combine(apisrs, :total =
 
 **R equivalent:**
 ```r
+srs_design <- svydesign(id=~1, fpc=~fpc, data=apisrs)
 svyratio(~api.stu, ~enroll, srs_design)
 ```
 
 The `apply_π_sum` function uses automatic differentiation to compute the Taylor series approximation to the variance of nonlinear estimators.
+
+## Linearization with Stratification
+
+When `π_sum` is passed a Matrix instead of a Vector,
+it creates a `SampleSums` object instead. This can be passed to
+`sum` or `apply_π_sum` to get clustered or stratified Taylor series variance estimates. 
+
+**Julia:**
+```julia
+@chain apistrat begin
+    @groupby(:stype)
+    @combine(:subtotal=π_sum([:api_stu :enroll],  Int(:fpc[1])))
+    @combine(:total=sum(a->a[1] / a[2], :subtotal))
+end
+```
+
+```r
+strat_design <- svydesign(id=~1, fpc=~fpc, strata=~stype, data=apistrat)
+svyratio(~api.stu, ~enroll, strat_design)
+```
 
 ## API Reference
 

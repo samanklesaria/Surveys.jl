@@ -72,6 +72,16 @@ function run_tests()
         apply_π_sum((a -> a[1] / a[2]), [:api_stu :enroll], Int(:fpc[1])))
     r_comp(ratio_jl, ratio_r)
 
+    # Stratified Taylor Approximations
+    ratio_jl = @chain apistrat begin
+        @groupby(:stype)
+        @combine(:subtotal=π_sum([:api_stu :enroll],  Int(:fpc[1])))
+        @combine(:total=sum(a->a[1] / a[2], :subtotal))
+    end
+    ratio_r = last.(collect(rcopy(R"svyratio(~api.stu, ~enroll, strat_design)")))
+    r_comp(ratio_jl, ratio_r)
 end
+
+#
 
 run_tests()

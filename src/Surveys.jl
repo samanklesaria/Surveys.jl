@@ -3,8 +3,22 @@ using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests, StatsModels
 using DiffResults, ForwardDiff
 import ForwardDiff: gradient!
 import DiffResults: GradientResult
+using DocStringExtensions
 
-export SampleSum, π_sum, pwr_sum, apply_π_sum, π_lm
+@template TYPES =
+    """
+    $(TYPEDEF)
+    $(TYPEDFIELDS)
+    $(DOCSTRING)
+    """
+
+@template (FUNCTIONS, METHODS, MACROS) =
+    """
+    $(TYPEDSIGNATURES)
+    $(DOCSTRING)
+    """
+
+export SampleSum, π_sum, pwr_sum, π_lm
 
 "Population estimate and its variance."
 struct SampleSum
@@ -22,7 +36,7 @@ end
 
 """
 Multivariate population estimates. These are usually collapsed into a
-`SampleSum` using `sum(f::Function, xs)` for stratified studies or `apply_π_sum`
+`SampleSum` using `sum(f::Function, xs)` for stratified studies or `π_sum(f::Function, xs)`
 for cluster studies.
 """
 struct SampleSums
@@ -40,7 +54,7 @@ end
     SampleSums(N * vec(mean(xs; dims=1)), xs, N)
 
 function Base.sum(f::Function, xs::Vector{SampleSums})
-    x0_M = sum(x.sums_M for x in xs)::Vector{Float64}
+    x0_M = sum(x.sums_M for x in xs)
     result = GradientResult(x0_M)
     gradient!(result, f, x0_M)
     ∇f_M = DiffResults.gradient(result)
@@ -48,6 +62,17 @@ function Base.sum(f::Function, xs::Vector{SampleSums})
         π_sum(x.samples_nM * ∇f_M, x.N).var
     end
     SampleSum(DiffResults.value(result), result_var)
+end
+
+function π_sum(f::Function, xs::Vector{SampleSums}, N::Int)
+    x0_M = N * mean(x.sums_M for x in xs)
+    result = GradientResult(x0_M)
+    gradient!(result, f, x0_M)
+    ∇f_M = DiffResults.gradient(result)
+    us = [π_sum(x.samples_nM * ∇f_M, x.N) for x in xs]
+    v = var(u.sum for u in us; corrected=true)
+    SampleSum(DiffResults.value(result),
+        N^2 * (1 / length(us) - 1 / N) * v + N * mean(u.var for u in us))
 end
 
 """
@@ -106,7 +131,7 @@ end
 """
 Estimate a nonlinear function of totals using Taylor series linearization with unequal probability sampling.
 """
-function apply_π_sum(f::Function, xs::Matrix{<:Real}, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
+function π_sum(f::Function, xs::Matrix{<:Real}, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
     x0 = vec(sum(xs ./ reshape(probs, (:, 1)); dims=1))
     result = GradientResult(x0)
     gradient!(result, f, x0)
@@ -119,7 +144,7 @@ end
 """
 Estimate a nonlinear function of totals using Taylor series linearization for simple random sampling.
 """
-function apply_π_sum(f::Function, xs::Matrix{<:Real}, N::Int)
+function π_sum(f::Function, xs::Matrix{<:Real}, N::Int)
     x0 = N * vec(mean(xs; dims=1))
     result = GradientResult(x0)
     gradient!(result, f, x0)

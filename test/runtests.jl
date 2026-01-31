@@ -69,7 +69,7 @@ function run_tests()
     # Ratio estimation
     ratio_r = last.(collect(rcopy(R"svyratio(~api.stu, ~enroll, srs_design)")))
     ratio_jl = @combine(apisrs, :total =
-        apply_π_sum((a -> a[1] / a[2]), [:api_stu :enroll], Int(:fpc[1])))
+        π_sum((a -> a[1] / a[2]), [:api_stu :enroll], Int(:fpc[1])))
     r_comp(ratio_jl, ratio_r)
 
     # Stratified Taylor Approximations
@@ -80,8 +80,15 @@ function run_tests()
     end
     ratio_r = last.(collect(rcopy(R"svyratio(~api.stu, ~enroll, strat_design)")))
     r_comp(ratio_jl, ratio_r)
-end
 
-#
+    # Clustered Taylor Approximations
+    cluster2_jl = @chain stage2 begin
+        @groupby(:county)
+        @combine(:subtotal = π_sum([:Burglary :Murder], county_sizes[first(:county)]))
+        @combine(:total = π_sum((a -> a[1] / a[2]), :subtotal, N_counties))
+    end
+    cluster2_r = last.(collect(rcopy(R"svyratio(~Burglary, ~Murder, svydesign(id=~county+id, fpc=~fpc+fpc2, data=stage2_joined))")))
+    r_comp(cluster2_jl, cluster2_r)
+end
 
 run_tests()

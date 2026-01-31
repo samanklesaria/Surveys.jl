@@ -98,13 +98,13 @@ The variance calculation properly accounts for both stages of sampling through t
 
 ## Ratio Estimation
 
-For ratio estimation or other nonlinear functions of totals, use `apply_π_sum` with Taylor series linearization.
+For ratio estimation or other nonlinear functions of totals, use `π_sum` with a `Function` argument for Taylor series linearization.
 
 **Julia:**
 ```julia
 # Estimate ratio of api.stu to enroll
 ratio_result = @combine(apisrs, :total = 
-    apply_π_sum((a -> a[1] / a[2]), [:api_stu :enroll], Int(:fpc[1])))
+    π_sum((a -> a[1] / a[2]), [:api_stu :enroll], Int(:fpc[1])))
 ```
 
 **R equivalent:**
@@ -113,13 +113,13 @@ srs_design <- svydesign(id=~1, fpc=~fpc, data=apisrs)
 svyratio(~api.stu, ~enroll, srs_design)
 ```
 
-The `apply_π_sum` function uses automatic differentiation to compute the Taylor series approximation to the variance of nonlinear estimators.
+The `π_sum` function uses automatic differentiation to compute the Taylor series approximation to the variance of nonlinear estimators.
 
-## Linearization with Stratification
+## Linearization with Stratification and Clustering
 
 When `π_sum` is passed a Matrix instead of a Vector,
 it creates a `SampleSums` object instead. This can be passed to
-`sum` or `apply_π_sum` to get clustered or stratified Taylor series variance estimates. 
+`sum` or `π_sum` to get clustered or stratified Taylor series variance estimates. 
 
 **Julia:**
 ```julia

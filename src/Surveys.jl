@@ -1,22 +1,7 @@
 module Surveys
-using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests, StatsModels
-using DiffResults, ForwardDiff
-import ForwardDiff: gradient!
-import DiffResults: GradientResult
-using DocStringExtensions
-
-@template TYPES =
-    """
-    $(TYPEDEF)
-    $(TYPEDFIELDS)
-    $(DOCSTRING)
-    """
-
-@template (FUNCTIONS, METHODS, MACROS) =
-    """
-    $(TYPEDSIGNATURES)
-    $(DOCSTRING)
-    """
+using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests, StatsModels,
+    DiffResults, ForwardDiff
+include("docbullshit.jl")
 
 export SampleSum, π_sum, pwr_sum, π_lm
 
@@ -55,8 +40,8 @@ end
 
 function Base.sum(f::Function, xs::Vector{SampleSums})
     x0_M = sum(x.sums_M for x in xs)
-    result = GradientResult(x0_M)
-    gradient!(result, f, x0_M)
+    result = DiffResults.GradientResult(x0_M)
+    ForwardDiff.gradient!(result, f, x0_M)
     ∇f_M = DiffResults.gradient(result)
     result_var = sum(xs; init=0.0) do x
         π_sum(x.samples_nM * ∇f_M, x.N).var
@@ -66,8 +51,8 @@ end
 
 function π_sum(f::Function, xs::Vector{SampleSums}, N::Int)
     x0_M = N * mean(x.sums_M for x in xs)
-    result = GradientResult(x0_M)
-    gradient!(result, f, x0_M)
+    result = DiffResults.GradientResult(x0_M)
+    ForwardDiff.gradient!(result, f, x0_M)
     ∇f_M = DiffResults.gradient(result)
     us = [π_sum(x.samples_nM * ∇f_M, x.N) for x in xs]
     v = var(u.sum for u in us; corrected=true)
@@ -133,8 +118,8 @@ Estimate a nonlinear function of totals using Taylor series linearization with u
 """
 function π_sum(f::Function, xs::Matrix{<:Real}, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
     x0 = vec(sum(xs ./ reshape(probs, (:, 1)); dims=1))
-    result = GradientResult(x0)
-    gradient!(result, f, x0)
+    result = DiffResults.GradientResult(x0)
+    ForwardDiff.gradient!(result, f, x0)
     ∇f = DiffResults.gradient(result)
     u = (xs * ∇f) ./ probs
     Δ = 1 .- (probs .* probs') ./ joint_probs
@@ -146,8 +131,8 @@ Estimate a nonlinear function of totals using Taylor series linearization for si
 """
 function π_sum(f::Function, xs::Matrix{<:Real}, N::Int)
     x0 = N * vec(mean(xs; dims=1))
-    result = GradientResult(x0)
-    gradient!(result, f, x0)
+    result = DiffResults.GradientResult(x0)
+    ForwardDiff.gradient!(result, f, x0)
     ∇f = DiffResults.gradient(result)
     u = xs * ∇f
     SampleSum(DiffResults.value(result), N^2 * (1 / size(xs, 1) - 1 / N) * var(u; corrected=true))
@@ -171,7 +156,7 @@ end
 """
 Fit a weighted linear regression model with unequal probability sampling.
 """
-function π_lm(f::FormulaTerm, df, probs::AbstractVector{<:Real}, N::Int)
+function π_lm(f::FormulaTerm, df, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
     y, X = modelcols(f, df)
     Λ = Diagonal(1 ./ probs)
     XX = Xt_A_X(Λ, X)

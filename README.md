@@ -1,6 +1,6 @@
 # Surveys.jl
 
-A Julia package for design-based inference in survey sampling. This package provides functionality comparable to R's `survey` package, with native Julia performance and integration with DataFrames.jl.
+A Julia package for design-based inference in survey sampling. This package provides functionality comparable to R's `survey` package, with native Julia performance and integration with DataFrames.jl. [![][docs-dev-img]][docs-dev-url]
 
 ## Overview
 
@@ -88,3 +88,6 @@ When `π_sum` is passed a Matrix instead of a Vector, it creates a `SampleSums` 
     @combine(:total=sum(a->a[1] / a[2], :subtotal))
 end
 ```
+
+[docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
+[docs-dev-url]: https://samanklesaria.github.io/Surveys.jl

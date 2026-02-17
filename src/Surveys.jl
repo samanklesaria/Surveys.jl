@@ -1,7 +1,7 @@
 module Surveys
 using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests, StatsModels,
     DiffResults, ForwardDiff
-include("docbullshit.jl")
+include("docboilerplate.jl")
 
 export SampleSum, π_sum, pwr_sum, π_lm
 

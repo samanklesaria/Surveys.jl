@@ -11,6 +11,8 @@ A Julia package for design-based inference in survey sampling. This package prov
 - One-stage cluster sampling
 - Two-stage cluster sampling
 - Taylor series variance estimation
+- Ratio estimation
+
 
 The main exported type is `SampleSum`, which stores both an estimate and its variance. 
     

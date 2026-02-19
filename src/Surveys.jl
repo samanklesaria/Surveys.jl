@@ -1,6 +1,5 @@
 module Surveys
-using Statistics, StatsBase, DataFrames, StatsAPI, StatsModels,
-    DiffResults, ForwardDiff, PDMats
+using Statistics, StatsBase, StatsAPI, StatsModels, DiffResults, ForwardDiff, PDMats, LinearAlgebra
 include("docboilerplate.jl")
 
 export SampleSum, π_sum, pwr_sum, π_lm
@@ -151,9 +150,9 @@ function π_lm(f::FormulaTerm, df, N::Int)
     X, y = (modelmatrix(f, df), response(f, df))
     XX = X' * X
     β = XX \ (X'y)
-    V = Diagonal((y - X * β) .^ 2)
+    V = PDiagMat((y - X * β) .^ 2)
     n = length(y)
-    SampleSum(β, (1 - n / N) * (n / (n - 1)) * (XX \ (XX \ X_A_Xt(V, X))'))
+    SampleSum.(β, (1 - n / N) * (n / (n - 1)) * diag(XX \ (XX \ Xt_A_X(V, X))'))
 end
 
 """
@@ -186,6 +185,22 @@ function π_sum(f::FormulaTerm, df1, df2, probs::AbstractVector{<:Real}, joint_p
     Δ = 1 .- (probs .* probs') ./ joint_probs
     SampleSum(sum(g .* y), u' * (Δ * u))
 end
+
+"""
+Find a regression-assisted estimate of a population sum with simple random sampling.
+"""
+function π_sum(f::FormulaTerm, df1, df2, N::Int)
+    X, y = (modelmatrix(f, df), response(f, df))
+    X2 = modelmatrix(f, df2)
+    XX = X' * X
+    A = XX \ X'
+    g = sum(X2; dims=1) * A
+    β = A * y
+    e = y - X * β
+    u = g .* e
+    SampleSum(sum(g .* y), N^2 * (1 / size(X, 1) - 1 / N) * var(u; corrected=true))
+end
+
 
 # P Estimation (Probability Weighted Ratio)
 

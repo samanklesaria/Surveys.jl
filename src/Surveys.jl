@@ -195,12 +195,15 @@ function π_sum(f::FormulaTerm, df, df2, N::Int)
     XX = X' * X
     A = XX \ X'
     t_x = sum(X2; dims=1)
+    if f.rhs isa Tuple && f.rhs[1] isa ConstantTerm
+        t_x[1] = N
+    end
     t_hat_x = N * mean(X; dims=1)
-    g = 1 .+ vec((t_x - t_hat_x) * A)
+    n = size(X, 1)
+    g = 1 .+ vec((n / N) * (t_x - t_hat_x) * A)
     β = A * y
     e = y - X * β
-    n = length(y)
-    SampleSum(N * mean(g .* y), N^2 * (1 - n / N) / n * var(e; corrected=true))
+    SampleSum(N * mean(g .* y), N^2 * (1 - n / N) / n * var(g .* e; corrected=true))
 end
 
 

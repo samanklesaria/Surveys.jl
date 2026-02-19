@@ -95,5 +95,5 @@ j = π_lm(@formula(api_stu ~ 1 + enroll), apisrs, Int(apisrs[1, :fpc]))
 
 # Model Assisted Estimation
 assisted_jl = π_sum(@formula(api_stu ~ 1 + enroll), apisrs, (; enroll=[4e6]), Int(apisrs[1, :fpc]))
-assisted_r = R"svytotal(~api.stu, calibrate(srs_design, ~enroll, c(4e6)))"
+assisted_r = R"svytotal(~api.stu, calibrate(srs_design, ~enroll, c('(Intercept)'=6194, enroll=4e6)))"
 r_comp(assisted_jl, rcopy(rcall(:with_var, assisted_r)))

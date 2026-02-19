@@ -137,17 +137,22 @@ strat_design <- svydesign(id=~1, fpc=~fpc, strata=~stype, data=apistrat)
 svyratio(~api.stu, ~enroll, strat_design)
 ```
 
+## Coefficient Estimation
 
-## The Difference Estimator
+For regression coefficient estimation with design-based variance, use `π_lm` with a formula and design specification.
 
+**Julia:**
 ```julia
-proxy_sum = sum(known[!,:[proxy]])
-@chain df begin
-    leftjoin(known, on=:id)
-    @transform(:diff = :y - :proxy)
-    @combine(:total=proxy_sum + π_sum(:diff, size(known, 1)))
-end
+π_lm(@formula(api_stu ~ 1 + enroll), apisrs, Int(apisrs[1, :fpc]))
 ```
+
+**R equivalent:**
+```r
+srs_design <- svydesign(id=~1, fpc=~fpc, data=apisrs)
+svyglm(api.stu ~ enroll, srs_design)
+```
+
+The `π_lm` function returns a vector of `SampleSum` objects, one for each coefficient, with design-based variance estimates.
 
 ## API Reference
 

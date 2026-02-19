@@ -9,10 +9,8 @@ with_var <- function(result) {
 }
 """
 
-function r_comp(julia_val, rv)
-    j = julia_val[1, :total]
-    @test all(rv .≈ [j.sum, j.var])
-end
+r_comp(julia_val::DataFrame, rv) = r_comp(julia_val[1, :total], rv)
+r_comp(j::SampleSum, rv) = @test all(rv .≈ [j.sum, j.var])
 
 # Simple Random Sampling
 
@@ -94,3 +92,8 @@ R"model <- svyglm(api.stu ~ enroll, srs_design)"
 j = π_lm(@formula(api_stu ~ 1 + enroll), apisrs, Int(apisrs[1, :fpc]))
 @test all(rcopy(R"coef(model)") .≈ [a.sum for a in j])
 @test all(rcopy(R"SE(model)^2") .≈ [a.var for a in j])
+
+# Model Assisted Estimation
+assisted_jl = π_sum(@formula(api_stu ~ 1 + enroll), apisrs, (; enroll=[4e6]), Int(apisrs[1, :fpc]))
+assisted_r = R"svytotal(~api.stu, calibrate(srs_design, ~enroll, c(4e6)))"
+r_comp(assisted_jl, rcopy(rcall(:with_var, assisted_r)))

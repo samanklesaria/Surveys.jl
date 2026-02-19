@@ -141,7 +141,7 @@ function π_sum(f::Function, xs::Matrix{<:Real}, N::Int)
 end
 
 """
-Fit a linear regression model accounting for survey design (simple random sampling).
+Fit a linear regression model accounting for simple random sampling.
 
 # See also
 R's `survey::svyglm()`
@@ -172,13 +172,13 @@ end
 """
 Find a regression-assisted estimate of a population sum with unequal probability sampling.
 """
-function π_sum(f::FormulaTerm, df1, df2, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
+function π_sum(f::FormulaTerm, df, df2, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
     X, y = (modelmatrix(f, df), response(f, df))
     X2 = modelmatrix(f, df2)
     Λ = Diagonal(1 ./ probs)
     XX = Xt_A_X(Λ, X)
     A = XX \ (X' * Λ)
-    g = sum(X2; dims=1) * A
+    g = vec(sum(X2; dims=1) * A)
     β = A * y
     e = y - X * β
     u = g .* e
@@ -189,16 +189,18 @@ end
 """
 Find a regression-assisted estimate of a population sum with simple random sampling.
 """
-function π_sum(f::FormulaTerm, df1, df2, N::Int)
+function π_sum(f::FormulaTerm, df, df2, N::Int)
     X, y = (modelmatrix(f, df), response(f, df))
     X2 = modelmatrix(f, df2)
     XX = X' * X
     A = XX \ X'
-    g = sum(X2; dims=1) * A
+    t_x = sum(X2; dims=1)
+    t_hat_x = N * mean(X; dims=1)
+    g = 1 .+ vec((t_x - t_hat_x) * A)
     β = A * y
     e = y - X * β
-    u = g .* e
-    SampleSum(sum(g .* y), N^2 * (1 / size(X, 1) - 1 / N) * var(u; corrected=true))
+    n = length(y)
+    SampleSum(N * mean(g .* y), N^2 * (1 - n / N) / n * var(e; corrected=true))
 end
 
 
@@ -220,5 +222,6 @@ function pwr_sum(xs::AbstractVector{SampleSum}, probs::AbstractVector{<:Real}, N
     SampleSum(mean(y), var(y; corrected=true) / N)
 end
 
+# TODO: raking
 
 end # module Surveys

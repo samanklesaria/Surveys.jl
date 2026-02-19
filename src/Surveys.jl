@@ -1,6 +1,6 @@
 module Surveys
-using Statistics, StatsBase, DataFrames, StatsAPI, HypothesisTests, StatsModels,
-    DiffResults, ForwardDiff
+using Statistics, StatsBase, DataFrames, StatsAPI, StatsModels,
+    DiffResults, ForwardDiff, PDMats
 include("docboilerplate.jl")
 
 export SampleSum, π_sum, pwr_sum, π_lm
@@ -14,9 +14,12 @@ struct SampleSum
 end
 
 Base.:+(a::SampleSum, b::SampleSum) = SampleSum(a.sum + b.sum, a.var + b.var)
+Base.:+(a::Real, b::SampleSum) = SampleSum(a + b.sum, b.var)
+Base.:+(a::SampleSum, b::Real) = SampleSum(a.sum + b, a.var)
 
-function StatsAPI.confint(a::SampleSum, args...; kwargs...)
-    confint(OneSampleZTest(a.sum, sqrt(a.var)), args...; kwargs...)
+function StatsAPI.confint(a::SampleSum; level=0.95)
+    α = (1 - level) / 2
+    quantile.(Normal(a.sum, sqrt(a.var)), [α, 1 - α])
 end
 
 """
@@ -145,7 +148,7 @@ Fit a linear regression model accounting for survey design (simple random sampli
 R's `survey::svyglm()`
 """
 function π_lm(f::FormulaTerm, df, N::Int)
-    y, X = modelcols(f, df)
+    X, y = (modelmatrix(f, df), response(f, df))
     XX = X' * X
     β = XX \ (X'y)
     V = Diagonal((y - X * β) .^ 2)
@@ -157,7 +160,7 @@ end
 Fit a weighted linear regression model with unequal probability sampling.
 """
 function π_lm(f::FormulaTerm, df, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
-    y, X = modelcols(f, df)
+    X, y = (modelmatrix(f, df), response(f, df))
     Λ = Diagonal(1 ./ probs)
     XX = Xt_A_X(Λ, X)
     β = XX \ (X' * Λ * y)
@@ -167,8 +170,21 @@ function π_lm(f::FormulaTerm, df, probs::AbstractVector{<:Real}, joint_probs::M
     SampleSum(β, XX \ (XX \ V)')
 end
 
-function pps_weight(xs::Vector{<:Real})
-    # TODO
+"""
+Find a regression-assisted estimate of a population sum with unequal probability sampling.
+"""
+function π_sum(f::FormulaTerm, df1, df2, probs::AbstractVector{<:Real}, joint_probs::Matrix, N::Int)
+    X, y = (modelmatrix(f, df), response(f, df))
+    X2 = modelmatrix(f, df2)
+    Λ = Diagonal(1 ./ probs)
+    XX = Xt_A_X(Λ, X)
+    A = XX \ (X' * Λ)
+    g = sum(X2; dims=1) * A
+    β = A * y
+    e = y - X * β
+    u = g .* e
+    Δ = 1 .- (probs .* probs') ./ joint_probs
+    SampleSum(sum(g .* y), u' * (Δ * u))
 end
 
 # P Estimation (Probability Weighted Ratio)

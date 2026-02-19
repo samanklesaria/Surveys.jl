@@ -135,6 +135,18 @@ strat_design <- svydesign(id=~1, fpc=~fpc, strata=~stype, data=apistrat)
 svyratio(~api.stu, ~enroll, strat_design)
 ```
 
+
+## The Difference Estimator
+
+```julia
+proxy_sum = sum(known[!,:[proxy]])
+@chain df begin
+    leftjoin(known, on=:id)
+    @transform(:diff = :y - :proxy)
+    @combine(:total=proxy_sum + π_sum(:diff, size(known, 1)))
+end
+```
+
 ## API Reference
 
 ```@autodocs

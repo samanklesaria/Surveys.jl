@@ -2,7 +2,7 @@ module Surveys
 using Statistics, StatsBase, StatsAPI, StatsModels, DiffResults, ForwardDiff, PDMats, LinearAlgebra
 include("docboilerplate.jl")
 
-export SampleSum, π_sum, pwr_sum, π_lm
+export SampleSum, π_sum, pwr_sum, π_lm, brewer
 
 "Population estimate and its variance."
 struct SampleSum
@@ -70,8 +70,12 @@ See also
 R's `survey::svytotal()` with `svydesign(id=~1, fpc=~fpc)`
 """
 function π_sum(xs::AbstractVector{<:Real}, N::Int)
-    m, v = mean_and_var(xs; corrected=true)
-    SampleSum(N * m, N^2 * (1 / length(xs) - 1 / N) * v)
+    if length(xs) == N
+        SampleSum(sum(xs), 0.0)
+    else
+        m, v = mean_and_var(xs; corrected=true)
+        SampleSum(N * m, N^2 * (1 / length(xs) - 1 / N) * v)
+    end
 end
 
 """
@@ -212,7 +216,7 @@ end
 """
 Probability-weighted ratio estimator (Hansen-Hurwitz estimator) for sampling with replacement.
 """
-function pwr_sum(xs::AbstractVector{<:Real}, probs::Vector{<:Real}, N::Int)
+function pwr_sum(xs::AbstractVector{<:Real}, probs::AbstractVector{<:Real})
     y = xs ./ probs
     SampleSum(mean(y), var(y; corrected=true) / length(xs))
 end
@@ -220,9 +224,21 @@ end
 """
 Combine cluster estimates using probability-weighted ratio estimation.
 """
-function pwr_sum(xs::AbstractVector{SampleSum}, probs::AbstractVector{<:Real}, N::Int)
+function pwr_sum(xs::AbstractVector{SampleSum}, probs::AbstractVector{<:Real})
     y = [x.sum for x in xs] ./ probs
     SampleSum(mean(y), var(y; corrected=true) / N)
+end
+
+"""
+Approxiate pairwise sampling probability for sampling proportional to size using Brewer's algorithm.
+"""
+function brewer(p)
+    n = length(p)
+    np = n .- p
+    ratios = p ./ np
+    denoms = sum(ratios) .- ratios
+    approx = 1 ./ (np .* denoms')
+    (n - 1) * (p .* p') .* (approx + approx') ./ 2
 end
 
 # TODO: raking

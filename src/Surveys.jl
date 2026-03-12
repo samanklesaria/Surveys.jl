@@ -2,15 +2,13 @@ module Surveys
 using Statistics, StatsBase, StatsAPI, StatsModels, DiffResults, ForwardDiff, PDMats, LinearAlgebra
 include("docboilerplate.jl")
 
-export SampleSum, π_sum, pwr_sum, π_lm, BrewerJointProbs
+export SampleSum, π_sum, pwr_sum, π_lm
 
 struct SampleProbs
     probs::Vector{Float64}
 end
 
 struct SIProbs end
-
-struct BrewerJointProbs end
 
 "Population estimate and its variance."
 struct SampleSum
@@ -116,15 +114,6 @@ function π_sum(xs::AbstractVector{<:Real}, probs::AbstractVector{<:Real}, joint
     Δ = 1 .- (probs .* probs') ./ joint_probs
     y = xs ./ probs
     SampleSum(sum(y), y' * (Δ * y))
-end
-
-# TODO: this is still not what R's survey package gives.
-function π_sum(xs::AbstractVector{<:Real}, probs::AbstractVector{<:Real}, joint_probs::BrewerJointProbs)
-    n = length(xs)
-    y = xs ./ probs
-    total = sum(y)
-    c = n .* (1 .- probs) ./ (n - 1)
-    SampleSum(total, sum(c .* (y .- total / length(xs)) .^ 2))
 end
 
 """

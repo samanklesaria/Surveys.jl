@@ -136,21 +136,6 @@ r_comp(j::SampleSum, rv) = @test all(rv .≈ [j.sum, j.var])
             pps1_jl = pwr_sum(crime_pps[!, :Burglary], probs)
             r_comp(pps1_jl, pps1_r)
         end
-
-        # TODO: I think the brewers calculation is faulty. The point estimate is fine,
-        # but the variance is wrong.
-        # @testset "Without Replacement (Brewers)" begin
-        #     samples = sample(1:size(cal_crime, 1), weights, 92; replace=false)
-        #     crime_pps = cal_crime[samples, :]
-        #     probs = (weights./weights.sum)[samples] * length(samples)
-        #     @transform!(crime_pps, :fpc = length(samples) / size(cal_crime, 1), :probs = probs)
-        #     @rput crime_pps
-        #     pps2_jl = π_sum(crime_pps[!, :Burglary], probs, BrewerJointProbs())
-        #     pps2_r = R"svytotal(~Burglary, svydesign(id=~1, fpc=~fpc, probs=~probs, pps=\"brewer\", data=crime_pps))"
-        #     print(pps2_jl)
-        #     print(pps2_r)
-        #     r_comp(pps2_jl, pps2_r)
-        # end
     end
 end
 

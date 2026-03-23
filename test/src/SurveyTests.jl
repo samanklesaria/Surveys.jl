@@ -10,6 +10,7 @@ r_comp(j::SampleSum, rv) = @test all(rv .≈ [j.sum, j.var])
 
     # Utility Functions
     R"""
+    library(sampling)
     library(survey)
     data(api)
 
@@ -124,8 +125,24 @@ r_comp(j::SampleSum, rv) = @test all(rv .≈ [j.sum, j.var])
     end
 
     @testset "PPS" begin
-        weights = Weights(cal_crime[!, :Theft])
+        @testset "Without Replacement" begin
+            R"pik <- inclusionprobabilities($(cal_crime[!, :Theft]), 50)"
+            R"pi2 <- UPmaxentropypi2(pik)"
+            @rget pik pi2
+            s = sample(1:size(cal_crime, 1), Weights(pik), 50; replace=false)
+            crime_pps = cal_crime[s, :]
+            pik = pik[s]
+            pi2 = pi2[s, s]
+            @transform!(crime_pps, :probs = pik)
+            @rput crime_pps
+            pps1_r = rcopy(rcall(:with_var,
+                R"""svytotal(~Burglary,svydesign(id=~1,
+                probs=~probs, pps=ppsmat($pi2), data=crime_pps))"""))
+            pps1_jl = sum(cal_crime[s, :Burglary], WithoutReplacement(pik, pi2))
+            r_comp(pps1_jl, pps1_r)
+        end
         @testset "With Replacement" begin
+            weights = Weights(cal_crime[!, :Theft])
             samples = sample(1:size(cal_crime, 1), weights, 92; replace=true)
             crime_pps = cal_crime[samples, :]
             probs = (weights./weights.sum)[samples]
